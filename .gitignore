@@ -13,6 +13,7 @@ __pycache__/
 
 # Python virtual environments
 venv/
+cat_dog/
 
 # Pages files
 *.pages 
