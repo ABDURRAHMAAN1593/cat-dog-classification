@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claws and Paws: Predicting Pet Personalities</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Add custom CSS styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px; /* Add padding for space above the container */
+        }
+
+        .container {
+            text-align: center;
+            max-width: 900px;
+            padding: 100px;
+            background: linear-gradient(to bottom right, #fff, #f0f0f0);
+            border-radius: 10px;
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s;
+            position: relative; /* Add position relative for hover effect */
+            overflow: hidden; /* Hide overflow to prevent scrollbars */
+        }
+
+        .container:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border: 1px solid #ccc; /* Add border on hover */
+        }
+
+        h1 {
+            text-transform: uppercase;
+            font-family: 'Arial Black', sans-serif;
+        }
+
+        .file-section {
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .file-name {
+            display: inline-block;
+            padding: 10px 15px;
+            background-color: #e2dddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(to right, #007bff, #0056b3);
+            border: none;
+            color: #fff;
+            padding: 10px 15px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        #imageUpload {
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            padding: 8px;
+        }
+
+        .btn-predict {
+            background: linear-gradient(to right, #28a745, #218838);
+            border: none;
+            color: #fff;
+            padding: 8px 20px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .result-image {
+            margin-top: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .result-image img {
+            max-width: 50%;
+            max-height: 50%;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        #result {
+            margin-top: 20px;
+        }
+
+        h3 {
+            font-family: 'Arial Black', sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Claws or Paws</h1><br>
+        <form action="/predict/combined" method="POST" enctype="multipart/form-data">
+            <div class="file-section">
+                <label for="imageUpload" class="btn btn-secondary">Choose Image</label>
+                <span class="file-name" id="imageName">No file chosen</span>
+                <input type="file" id="imageUpload" name="image" accept="image/*" class="d-none">
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-block btn-predict">Predict</button>
+        </form>
+        <br><br>
+        <div class="result-image" id="resultImage">
+            <h3 class="text-light"></h3>
+            <img id="inputImage" src="" alt="">
+        </div>
+        <div id="result"></div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        const form = document.querySelector('form');
+        const resultDiv = document.getElementById('result');
+        const inputImageElement = document.getElementById('inputImage');
+        const imageNameSpan = document.getElementById('imageName');
+        const imageUploadInput = document.getElementById('imageUpload');
+
+        imageUploadInput.addEventListener('change', function() {
+            const fileName = this.files[0].name;
+            imageNameSpan.textContent = fileName;
+        });
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(form);
+            const response = await fetch('/predict/combined', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+
+            resultDiv.innerHTML = `<h3>Prediction: ${data.prediction}</h3>`;
+            inputImageElement.src = URL.createObjectURL(formData.get('image'));
+            inputImageElement.style.display = 'block'; // Show the image when available
+        });
+    </script>
+</body>
+</html>
